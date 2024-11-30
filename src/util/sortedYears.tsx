@@ -6,10 +6,17 @@ type YearPosts = {
 };
 
 // Get sorted years in descending order
-const sortedYears = (groupedPosts: Map<number, Message[]>): YearPosts[] => {
-  return [...groupedPosts.entries()]
-    .sort(([yearA], [yearB]) => yearB - yearA)
-    .map(([year, posts]) => ({ year, posts }));
+const sortedYears = (groupedPosts: {
+  [key: number]: Message[];
+}): YearPosts[] => {
+  const sortedEntries = Object.entries(groupedPosts).sort(
+    ([yearA], [yearB]) => Number(yearB) - Number(yearA)
+  );
+
+  return sortedEntries.map(([year, posts]) => ({
+    year: Number(year),
+    posts,
+  }));
 };
 
 export default sortedYears;

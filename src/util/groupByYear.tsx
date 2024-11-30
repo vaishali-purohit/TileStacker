@@ -1,15 +1,15 @@
 import Message from '../types/Message.type';
 
 // Group posts by year
-const groupPostsByYear = (posts: Message[]): Map<number, Message[]> => {
-  const grouped = new Map<number, Message[]>();
+const groupPostsByYear = (posts: Message[]): { [key: number]: Message[] } => {
+  const grouped: { [key: number]: Message[] } = {};
 
   for (const post of posts) {
-    const year = new Date(post.date).getFullYear();
-    if (!grouped.has(year)) {
-      grouped.set(year, []);
+    const year = new Date(post.date).getFullYear(); // Extract the year from the date
+    if (!grouped[year]) {
+      grouped[year] = [];
     }
-    grouped.get(year)?.push(post);
+    grouped[year].push(post);
   }
 
   return grouped;
