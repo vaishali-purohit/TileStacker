@@ -11,8 +11,8 @@ const App: React.FC = () => {
   const [filter, setFilter] = useState<string>('reset');
 
   useEffect(() => {
-    const groupedPosts = groupPostsByYear(input); // Group posts by year
-    const years = sortedYears(groupedPosts); // Get the sorted years in descending order
+    const groupedPosts = groupPostsByYear(input);
+    const years = sortedYears(groupedPosts);
 
     setOriginalData(years);
   }, []);
@@ -23,7 +23,11 @@ const App: React.FC = () => {
         onReset={() => setFilter('reset')}
         onSort={() => setFilter('sort')}
       />
-      <GridPost originalData={originalData} filter={filter} />
+      <GridPost
+        originalData={originalData}
+        filter={filter}
+        setFilter={setFilter}
+      />
     </>
   );
 };
