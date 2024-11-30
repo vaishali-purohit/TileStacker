@@ -1,0 +1,15 @@
+{
+  "files": [],
+  "compilerOptions": {
+    "module": "ESNext", // Use ESNext to allow import/export syntax
+    "target": "ESNext", // Or ES6 if you are targeting an older environment
+    "moduleResolution": "node", // Resolves modules in the Node.js way
+    "esModuleInterop": true, // Ensures compatibility with CommonJS modules
+    "allowSyntheticDefaultImports": true, // Allows default imports from non-ES modules
+    "jsx": "react-jsx" // For React 17 JSX transform
+  },
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
+}

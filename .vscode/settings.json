@@ -1,0 +1,7 @@
+{
+    "editor.wordWrap": "on",
+    "prettier.configPath": ".prettierrc",
+    "prettier.useTabs": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+}
