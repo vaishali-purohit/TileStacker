@@ -27,7 +27,7 @@ const MessageInfo: React.FC<MessageInfoProps> = ({
   return (
     <div
       key={post?.message}
-      className="flex-1 min-w-[300px] max-w-[350px] bg-white border border-gray-300 rounded-lg p-6 shadow-lg hover:shadow-2xl transition-all duration-300"
+      className="flex-1 min-w-[300px] max-w-[350px] bg-white border border-gray-300 rounded-lg p-6 shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer"
       draggable
       onDragStart={(e) => onDragStart(e, yearIndex, postIndex)}
       onDragOver={onDragOver}

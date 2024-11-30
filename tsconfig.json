@@ -6,7 +6,8 @@
     "moduleResolution": "node", // Resolves modules in the Node.js way
     "esModuleInterop": true, // Ensures compatibility with CommonJS modules
     "allowSyntheticDefaultImports": true, // Allows default imports from non-ES modules
-    "jsx": "react-jsx" // For React 17 JSX transform
+    "jsx": "react-jsx", // For React 17 JSX transform
+    "types": ["@testing-library/jest-dom", "vitest/globals"] // Add jest-dom type definition here
   },
   "references": [
     { "path": "./tsconfig.app.json" },

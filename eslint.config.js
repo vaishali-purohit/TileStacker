@@ -18,4 +18,14 @@ export default [
       },
     },
   },
+  {
+    overrides: [
+      {
+        files: ['**/*.test.js', '**/*.test.tsx'], // Ensure ESLint treats test files properly
+        rules: {
+          'react/react-in-jsx-scope': 'off', // Disable the rule for test files
+        },
+      },
+    ],
+  },
 ];
