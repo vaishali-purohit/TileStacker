@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Disclosure } from '@headlessui/react';
-import './NavBar.css';
+import './Navbar.css';
 
 type HeaderProps = {
   onReset: () => void;
