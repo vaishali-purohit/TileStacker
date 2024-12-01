@@ -55,6 +55,9 @@ const MessageForm: React.FC<MessageFormProps> = ({
     }
   };
 
+  // Disable button until the form is valid
+  const isFormValid = date && message;
+
   return (
     <Dialog open={open} onClose={closeForm} className="relative z-10">
       <DialogBackdrop
@@ -140,7 +143,8 @@ const MessageForm: React.FC<MessageFormProps> = ({
               <button
                 type="submit"
                 form="messageForm"
-                className="inline-flex w-full justify-center rounded-md bg-blue-500 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-blue-600 sm:ml-3 sm:w-auto"
+                disabled={!isFormValid} // Disable the button if the form is not valid
+                className={`inline-flex w-full justify-center rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm sm:ml-3 sm:w-auto ${!isFormValid ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'}`}
               >
                 Add Message
               </button>
