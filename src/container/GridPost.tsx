@@ -4,6 +4,7 @@ import YearPosts from '../types/Year.type';
 import Message from '../types/Message.type';
 import sortByDate from '../util/sortByDate';
 import MessageForm from '../component/MessageForm';
+import Pagination from '../component/Pagination';
 
 type GridPostProps = {
   originalData: YearPosts[] | null;
@@ -23,6 +24,10 @@ const GridPost: React.FC<GridPostProps> = ({
   } | null>(null);
   const [showForm, setShowForm] = useState(false);
 
+  // Pagination state for years
+  const [currentYearPage, setCurrentYearPage] = useState(1);
+  const [yearsPerPage] = useState(3); // Number of years per page (adjust as needed)
+
   useEffect(() => {
     if (filter === 'reset') {
       setMessageList(
@@ -39,6 +44,15 @@ const GridPost: React.FC<GridPostProps> = ({
       }
     }
   }, [filter, originalData]);
+
+  // Paginate by years: Get years for the current page
+  const totalYears = messageList ? messageList.length : 0;
+
+  // Slice years data based on current page
+  const startIndex = (currentYearPage - 1) * yearsPerPage;
+  const currentYears = messageList
+    ? messageList.slice(startIndex, startIndex + yearsPerPage)
+    : [];
 
   const handleDragStart = (
     e: React.DragEvent,
@@ -137,32 +151,45 @@ const GridPost: React.FC<GridPostProps> = ({
           Add New Message
         </button>
       </div>
-      {messageList.map(({ year, posts }, yearIndex) => (
-        <div className="py-4" key={year}>
-          {/* Heading Section */}
-          <div className=" mb-8">
-            <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-200 via-purple-500 to-pink-500 tracking-wide">
-              {year}
-            </h2>
-          </div>
 
-          {/* Main Content Section */}
-          <div className="flex flex-wrap gap-8">
-            {posts.map((post: Message, postIndex: number) => (
-              <MessageInfo
-                post={post}
-                key={postIndex}
-                yearIndex={yearIndex}
-                postIndex={postIndex}
-                onDragStart={handleDragStart}
-                onDragOver={handleDragOver}
-                onDrop={handleDrop}
-                onDragEnd={handleDragEnd}
-              />
-            ))}
+      <div className="py-4">
+        {/* Show paginated years */}
+        {currentYears.map(({ year, posts }, yearIndex) => (
+          <div key={year} className="py-4">
+            {/* Heading Section */}
+            <div className=" mb-8">
+              <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-200 via-purple-500 to-pink-500 tracking-wide">
+                {year}
+              </h2>
+            </div>
+
+            {/* Main Content Section */}
+            <div className="flex flex-wrap gap-8">
+              {posts.map((post: Message, postIndex: number) => (
+                <MessageInfo
+                  post={post}
+                  key={postIndex}
+                  yearIndex={yearIndex}
+                  postIndex={postIndex}
+                  onDragStart={handleDragStart}
+                  onDragOver={handleDragOver}
+                  onDrop={handleDrop}
+                  onDragEnd={handleDragEnd}
+                />
+              ))}
+            </div>
           </div>
-        </div>
-      ))}
+        ))}
+      </div>
+
+      {/* Pagination Controls */}
+      <Pagination
+        totalItems={totalYears}
+        itemsPerPage={yearsPerPage}
+        currentPage={currentYearPage}
+        onPageChange={setCurrentYearPage}
+      />
+
       {showForm && (
         <MessageForm
           open={showForm}
