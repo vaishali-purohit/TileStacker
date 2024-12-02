@@ -15,8 +15,8 @@ export default defineConfig({
     compression({
       verbose: true,
       disable: false,
-      threshold: 10240, // Only compress files larger than 10KB
-      algorithm: 'gzip', // Use Brotli compression
+      threshold: 1024, // Only compress files larger than 1KB
+      algorithm: 'brotliCompress', // Use Brotli compression
       ext: '.br',
     }),
   ],
@@ -24,12 +24,26 @@ export default defineConfig({
     minify: 'esbuild', // Minify the code with esbuild
     target: 'es2020', // Set modern JavaScript target
     cssCodeSplit: true, // Split CSS files for better cacheability
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom'], // Externalize big dependencies
         },
       },
+    },
+    chunkSizeWarningLimit: 1000,
+    assetsInlineLimit: 4096,
+  },
+  server: {
+    hmr: {
+      overlay: false,
+    },
+  },
+  optimizeDeps: {
+    esbuildOptions: {
+      target: 'es2020',
+      minify: true,
     },
   },
 });

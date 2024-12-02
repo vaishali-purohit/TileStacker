@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import Header from './container/Header';
-import GridPost from './container/GridPost';
 import groupPostsByYear from './util/groupByYear';
 import sortedYears from './util/sortedYears';
 import { input } from './data/dummyInput';
 import YearPosts from './types/Year.type';
+
+const Header = React.lazy(() => import('./container/Header'));
+const GridPost = React.lazy(() => import('./container/GridPost'));
 
 const App: React.FC = () => {
   const [originalData, setOriginalData] = useState<YearPosts[] | null>(null);
@@ -18,7 +19,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <>
+    <React.Suspense fallback={<div>Loading...</div>}>
       <Header
         onReset={() => setFilter('reset')}
         onSort={() => setFilter('sort')}
@@ -28,7 +29,7 @@ const App: React.FC = () => {
         filter={filter}
         setFilter={setFilter}
       />
-    </>
+    </React.Suspense>
   );
 };
 

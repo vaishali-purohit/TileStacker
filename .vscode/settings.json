@@ -1,7 +1,10 @@
 {
-    "editor.wordWrap": "on",
-    "prettier.configPath": ".prettierrc",
-    "prettier.useTabs": true,
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "editor.formatOnSave": true,
+  "editor.wordWrap": "on",
+  "prettier.configPath": ".prettierrc",
+  "prettier.useTabs": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "files.associations": {
+    "*.css": "tailwindcss"
+  }
 }

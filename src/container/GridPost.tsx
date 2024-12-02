@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import MessageInfo from '../component/MessageInfo';
 import YearPosts from '../types/Year.type';
 import Message from '../types/Message.type';
@@ -26,107 +26,84 @@ const GridPost: React.FC<GridPostProps> = ({
 
   // Pagination state for years
   const [currentYearPage, setCurrentYearPage] = useState(1);
-  const [yearsPerPage] = useState(3); // Number of years per page (adjust as needed)
+  const yearsPerPage = 3;
 
   useEffect(() => {
     if (filter === 'reset') {
-      setMessageList(
-        originalData ? JSON.parse(JSON.stringify(originalData)) : null
-      );
-    }
-
-    if (filter === 'sort') {
-      if (messageList) {
-        const sorted = sortByDate(JSON.parse(JSON.stringify(messageList)));
-        if (sorted) {
-          setMessageList(sorted);
-        }
-      }
+      setMessageList(originalData ? [...originalData] : null);
+    } else if (filter === 'sort' && messageList) {
+      const sorted = sortByDate([...messageList]);
+      setMessageList(sorted);
     }
   }, [filter, originalData]);
 
-  // Paginate by years: Get years for the current page
-  const totalYears = messageList ? messageList.length : 0;
+  const currentYears = useMemo(() => {
+    if (!messageList) return [];
+    const startIndex = (currentYearPage - 1) * yearsPerPage;
+    return messageList.slice(startIndex, startIndex + yearsPerPage);
+  }, [messageList, currentYearPage]);
 
-  // Slice years data based on current page
-  const startIndex = (currentYearPage - 1) * yearsPerPage;
-  const currentYears = messageList
-    ? messageList.slice(startIndex, startIndex + yearsPerPage)
-    : [];
+  // Handle drag and drop logic
+  const handleDragStart = useCallback(
+    (e: React.DragEvent, yearIndex: number, postIndex: number) => {
+      setDraggedItem({ yearIndex, postIndex });
+      e.dataTransfer.effectAllowed = 'move';
+    },
+    []
+  );
 
-  const handleDragStart = (
-    e: React.DragEvent,
-    yearIndex: number,
-    postIndex: number
-  ) => {
-    setDraggedItem({ yearIndex, postIndex });
-    e.dataTransfer.effectAllowed = 'move';
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
+  const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
-  };
+  }, []);
 
-  const handleDrop = (
-    e: React.DragEvent,
-    targetYearIndex: number,
-    targetPostIndex: number
-  ) => {
-    e.preventDefault();
+  const handleDrop = useCallback(
+    (e: React.DragEvent, targetYearIndex: number, targetPostIndex: number) => {
+      e.preventDefault();
+      if (draggedItem) {
+        const { yearIndex: sourceYearIndex, postIndex: sourcePostIndex } =
+          draggedItem;
+        if (sourceYearIndex !== targetYearIndex) return;
 
-    if (draggedItem) {
-      const { yearIndex: sourceYearIndex, postIndex: sourcePostIndex } =
-        draggedItem;
+        const newMessageList = [...messageList!];
+        const sourcePost =
+          newMessageList[sourceYearIndex].posts[sourcePostIndex];
+        newMessageList[sourceYearIndex].posts.splice(sourcePostIndex, 1);
+        newMessageList[targetYearIndex].posts.splice(
+          targetPostIndex,
+          0,
+          sourcePost
+        );
 
-      if (sourceYearIndex !== targetYearIndex) {
-        return; // Don't allow the drop
+        setMessageList(newMessageList);
+        setFilter('drag');
+        setDraggedItem(null);
       }
+    },
+    [draggedItem, messageList, setFilter]
+  );
 
-      const newMessageList = JSON.parse(JSON.stringify(messageList));
-      const sourcePost = newMessageList[sourceYearIndex].posts[sourcePostIndex];
-      newMessageList[sourceYearIndex].posts.splice(sourcePostIndex, 1);
-      newMessageList[targetYearIndex].posts.splice(
-        targetPostIndex,
-        0,
-        sourcePost
-      );
-
-      setMessageList(newMessageList);
-      setFilter('drag');
-      setDraggedItem(null);
-    }
-  };
-
-  const handleDragEnd = () => {
+  const handleDragEnd = useCallback(() => {
     setDraggedItem(null);
-  };
+  }, []);
 
   const addMessage = (date: string, message: string) => {
     const year = new Date(date).getFullYear();
     const newPost = { date, message };
 
-    // Update the messageList state based on the previous state
+    // Optimized update to avoid deep cloning
     setMessageList((prevData) => {
-      if (!prevData) return [];
+      if (!prevData) return [{ year, posts: [newPost] }];
+
       const yearObj = prevData.find((item) => item.year === year);
-      let updatedData;
+      const updatedData = yearObj
+        ? prevData.map((item) =>
+            item.year === year
+              ? { ...item, posts: [...item.posts, newPost] }
+              : item
+          )
+        : [...prevData, { year, posts: [newPost] }];
 
-      if (yearObj) {
-        updatedData = prevData.map((item) =>
-          item.year === year
-            ? { ...item, posts: [...item.posts, newPost] }
-            : item
-        );
-      } else {
-        updatedData = [
-          ...prevData,
-          {
-            year,
-            posts: [newPost],
-          },
-        ];
-      }
-
+      // Sort data by year for consistency
       updatedData.sort((a, b) => b.year - a.year);
       return updatedData;
     });
@@ -143,9 +120,9 @@ const GridPost: React.FC<GridPostProps> = ({
 
   return (
     <div className="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-      <div className="mb-6">
+      <div className="mb-6 flex justify-end">
         <button
-          className="float-end px-4 py-2 bg-blue-500 text-white font-semibold text-sm rounded-lg shadow-lg transform transition-all duration-300 hover:bg-blue-600 hover:scale-105"
+          className="px-4 py-2 bg-blue-500 text-white font-semibold text-sm rounded-lg shadow-lg transform transition-all duration-300 hover:bg-blue-600 hover:scale-105"
           onClick={() => setShowForm(true)}
         >
           Add New Message
@@ -157,7 +134,7 @@ const GridPost: React.FC<GridPostProps> = ({
         {currentYears.map(({ year, posts }, yearIndex) => (
           <div key={year} className="py-4">
             {/* Heading Section */}
-            <div className=" mb-8">
+            <div className="mb-8">
               <h2 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-green-200 via-purple-500 to-pink-500 tracking-wide">
                 {year}
               </h2>
@@ -184,7 +161,7 @@ const GridPost: React.FC<GridPostProps> = ({
 
       {/* Pagination Controls */}
       <Pagination
-        totalItems={totalYears}
+        totalItems={messageList.length}
         itemsPerPage={yearsPerPage}
         currentPage={currentYearPage}
         onPageChange={setCurrentYearPage}
