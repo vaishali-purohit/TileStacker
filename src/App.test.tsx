@@ -18,9 +18,12 @@ describe('App Component', () => {
   it('renders App and checks initial render', async () => {
     render(<App />);
 
-    expect(screen.getByText('Reset')).toBeInTheDocument();
-    expect(screen.getByText('Sort')).toBeInTheDocument();
-    await waitFor(() => screen.getByText('Reset'));
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText('Reset')).toBeInTheDocument();
+      expect(screen.getByText('Sort')).toBeInTheDocument();
+    });
   });
 
   it('should call onReset and onSort functions', () => {

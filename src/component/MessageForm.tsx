@@ -5,17 +5,20 @@ import {
   DialogPanel,
   DialogTitle,
 } from '@headlessui/react';
+import YearPosts from '../types/Year.type';
 
 type MessageFormProps = {
   addTile: (date: string, message: string) => void;
   closeForm: () => void;
   open: boolean;
+  messageList: YearPosts[];
 };
 
 const MessageForm: React.FC<MessageFormProps> = ({
   open,
   closeForm,
   addTile,
+  messageList,
 }) => {
   const [date, setDate] = useState('');
   const [message, setMessage] = useState('');
@@ -30,10 +33,17 @@ const MessageForm: React.FC<MessageFormProps> = ({
       newErrors.date = 'Date is required';
     } else {
       const dateObj = new Date(date);
+
+      const isDateExist = messageList.some(({ posts }) =>
+        posts.some(({ date }) => new Date(date).getTime() === dateObj.getTime())
+      );
+
       if (isNaN(dateObj.getTime())) {
         newErrors.date = 'Invalid date format. Please use YYYY-MM-DD.';
       } else if (dateObj > new Date()) {
         newErrors.date = 'Date cannot be in the future.';
+      } else if (isDateExist) {
+        newErrors.date = 'Date cannot be duplicate.';
       }
     }
 

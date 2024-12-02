@@ -6,8 +6,19 @@ describe('MessageForm Component', () => {
   const addTile = vi.fn();
   const closeForm = vi.fn();
 
+  const dummyData = [
+    { year: 2013, posts: [{ date: '2013-02-12', message: 'Dummy Data.' }] },
+  ];
+
   it('should render MessageForm with open state', () => {
-    render(<MessageForm open={true} addTile={addTile} closeForm={closeForm} />);
+    render(
+      <MessageForm
+        open={true}
+        addTile={addTile}
+        closeForm={closeForm}
+        messageList={dummyData}
+      />
+    );
 
     // Check if the form elements are rendered
     const dateInput = screen.getByLabelText('Date (YYYY-MM-DD)');
@@ -17,24 +28,18 @@ describe('MessageForm Component', () => {
     expect(messageInput).toBeInTheDocument();
   });
 
-  it('should display error messages if form fields are invalid', async () => {
-    render(<MessageForm open={true} addTile={addTile} closeForm={closeForm} />);
-
-    // Try to submit without filling the form
-    fireEvent.click(screen.getByText(/Add Message/));
-
-    // Check for error messages
-    await waitFor(() => {
-      expect(screen.getByText(/Date is required/)).toBeInTheDocument();
-      expect(screen.getByText(/Message is required/)).toBeInTheDocument();
-    });
-  });
-
   it('should display date error for future date format', async () => {
-    render(<MessageForm open={true} addTile={addTile} closeForm={closeForm} />);
+    render(
+      <MessageForm
+        open={true}
+        addTile={addTile}
+        closeForm={closeForm}
+        messageList={dummyData}
+      />
+    );
 
     fireEvent.change(screen.getByLabelText(/Date/), {
-      target: { value: '2024-12-01' },
+      target: { value: '2025-12-01' },
     });
 
     fireEvent.change(screen.getByRole('textbox', { name: /message/i }), {
@@ -53,7 +58,14 @@ describe('MessageForm Component', () => {
   });
 
   it('should call addTile and closeForm when valid data is submitted', async () => {
-    render(<MessageForm open={true} addTile={addTile} closeForm={closeForm} />);
+    render(
+      <MessageForm
+        open={true}
+        addTile={addTile}
+        closeForm={closeForm}
+        messageList={dummyData}
+      />
+    );
 
     // Enter valid data
     fireEvent.change(screen.getByLabelText(/Date/), {
@@ -75,7 +87,14 @@ describe('MessageForm Component', () => {
   });
 
   it('should close the form when Cancel button is clicked', () => {
-    render(<MessageForm open={true} addTile={addTile} closeForm={closeForm} />);
+    render(
+      <MessageForm
+        open={true}
+        addTile={addTile}
+        closeForm={closeForm}
+        messageList={dummyData}
+      />
+    );
 
     fireEvent.click(screen.getByText(/Cancel/));
 

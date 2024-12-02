@@ -5,6 +5,7 @@ import Message from '../types/Message.type';
 import sortByDate from '../util/sortByDate';
 import MessageForm from '../component/MessageForm';
 import Pagination from '../component/Pagination';
+import Toast from '../component/Toast';
 
 type GridPostProps = {
   originalData: YearPosts[] | null;
@@ -22,7 +23,8 @@ const GridPost: React.FC<GridPostProps> = ({
     yearIndex: number;
     postIndex: number;
   } | null>(null);
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState<boolean>(false);
+  const [showToast, setShowToast] = useState<boolean>(false);
 
   // Pagination state for years
   const [currentYearPage, setCurrentYearPage] = useState(1);
@@ -107,6 +109,10 @@ const GridPost: React.FC<GridPostProps> = ({
       updatedData.sort((a, b) => b.year - a.year);
       return updatedData;
     });
+    setShowToast(true);
+    setTimeout(() => {
+      setShowToast(false);
+    }, 3000);
   };
 
   // If posts are not loaded, return a loading state or null
@@ -172,8 +178,11 @@ const GridPost: React.FC<GridPostProps> = ({
           open={showForm}
           addTile={addMessage}
           closeForm={() => setShowForm(false)}
+          messageList={messageList}
         />
       )}
+
+      {showToast && <Toast message={'Post added successfully.'} />}
     </div>
   );
 };
