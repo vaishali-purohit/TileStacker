@@ -99,3 +99,9 @@ yarn lint:fix
 The app is deployed on Netlify. You can view the live version at:
 
 [Netlify Deployment Link](https://tilestacker.netlify.app/)
+
+## Future Enhancements
+
+1. Add filter option for user to choose sorting order ascending/desending, sort by year, sort by date
+2. User can Delete/Edit the post
+3. User can select to show only 1 year data (or more)

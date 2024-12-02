@@ -33,7 +33,7 @@ const GridPost: React.FC<GridPostProps> = ({
       setMessageList(originalData ? [...originalData] : null);
     } else if (filter === 'sort' && messageList) {
       const sorted = sortByDate([...messageList]);
-      setMessageList(sorted);
+      if (sorted) setMessageList(sorted);
     }
   }, [filter, originalData]);
 
